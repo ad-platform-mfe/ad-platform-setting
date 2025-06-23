@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@micro-zoe/micro-app": "^1.0.0-rc.26",
+    "axios": "^1.10.0",
     "tdesign-vue-next": "^1.13.2",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@types/node": "^24.0.3",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",
