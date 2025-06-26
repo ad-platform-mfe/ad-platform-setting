@@ -15,13 +15,19 @@ export interface MessageListResponse {
   rows: Message[]
 }
 
+// 定义一个包含 code 和 data 的完整响应类型
+export interface ApiResponse<T> {
+  code: number
+  data: T
+}
+
 /**
  * 获取消息列表
  */
 export function getMessages(params: {
   page?: number
   pageSize?: number
-}): Promise<MessageListResponse> {
+}): Promise<ApiResponse<MessageListResponse>> {
   return request.get('/messages', {
     params
   })

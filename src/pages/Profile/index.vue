@@ -141,11 +141,20 @@
                 v-for="message in messages"
                 :key="message.id"
                 class="message-item"
-                :class="{ unread: message.status === 'unread' }"
+                :class="{
+                  unread: message.status === 'unread',
+                  'type-rejected': message.type === 'review_rejected'
+                }"
                 @click="handleMessageClick(message)"
               >
                 <div class="message-icon">
-                  <t-icon name="notification"></t-icon>
+                  <t-icon
+                    :name="
+                      message.type === 'review_rejected'
+                        ? 'error-circle'
+                        : 'check-circle'
+                    "
+                  ></t-icon>
                 </div>
                 <div class="message-content-body">
                   <div class="message-title">{{ message.title }}</div>
@@ -636,31 +645,52 @@ onMounted(() => {
   gap: 12px;
 }
 
+/* 默认/通过 的消息样式 */
 .message-item {
   display: flex;
   gap: 16px;
   padding: 16px;
   border-radius: 12px;
-  background-color: #f5f7fa;
-  border: 1px solid #f0f2f5;
+  background-color: #f0faff; /* 浅蓝色背景 */
+  border: 1px solid #e0f0ff;
+  border-left: 4px solid transparent; /* 已读时无特殊颜色边框 */
+  transition: all 0.2s;
   cursor: pointer;
 }
-
+.message-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
 .message-item.unread {
+  border-left-color: #165dff; /* 未读时为蓝色边框 */
+}
+.message-item .message-icon {
   background-color: #e8f3ff;
-  border-left: 3px solid #165dff;
+  color: #165dff;
+}
+
+/* 驳回 的消息样式 (覆盖默认) */
+.message-item.type-rejected {
+  background-color: #fff0f0; /* 浅红色背景 */
+  border-color: #ffdede;
+}
+.message-item.type-rejected.unread {
+  border-left-color: #d93939; /* 未读时为红色边框 */
+}
+.message-item.type-rejected .message-icon {
+  background-color: #ffdede;
+  color: #d93939;
 }
 
 .message-icon {
   width: 40px;
   height: 40px;
-  background-color: #e8f3ff;
-  color: #165dff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  font-size: 20px;
 }
 
 .message-content-body {
