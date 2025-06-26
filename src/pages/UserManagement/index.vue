@@ -69,6 +69,13 @@
         <t-form-item label="手机号" name="phone">
           <t-input v-model="formData.phone" placeholder="请输入手机号" />
         </t-form-item>
+        <t-form-item v-if="!editMode" label="密码" name="password">
+          <t-input
+            v-model="formData.password"
+            type="password"
+            placeholder="请输入密码"
+          />
+        </t-form-item>
         <t-form-item label="角色" name="role">
           <t-select v-model="formData.role">
             <t-option key="admin" label="管理员" value="admin" />
@@ -82,7 +89,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from 'vue'
-import { getAllUsers, updateUser, deleteUser, type User } from '@/api/user'
+import {
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  createUser,
+  type User
+} from '@/api/user'
 import {
   MessagePlugin,
   type TableProps,
@@ -103,15 +116,18 @@ const formData = reactive<{
   email: string
   phone: string
   role: 'user' | 'admin'
+  password: string
 }>({
   username: '',
   email: '',
   phone: '',
-  role: 'user'
+  role: 'user',
+  password: ''
 })
 
 const formRules: Record<string, FormRule[]> = {
   username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
+  password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
   role: [{ required: true, message: '必须选择一个角色', trigger: 'change' }]
 }
 
@@ -154,6 +170,7 @@ const resetForm = () => {
   formData.email = ''
   formData.phone = ''
   formData.role = 'user'
+  formData.password = ''
   currentUserId.value = null
 }
 
@@ -192,10 +209,12 @@ const onConfirm = async () => {
 
   try {
     if (editMode.value && currentUserId.value) {
-      await updateUser(currentUserId.value, formData)
+      const { password, ...updateData } = formData
+      await updateUser(currentUserId.value, updateData)
       MessagePlugin.success('更新成功')
     } else {
-      MessagePlugin.info('"新建用户"仅为演示，请连接后端 createUser 接口')
+      await createUser(formData)
+      MessagePlugin.success('新建用户成功')
     }
     dialogVisible.value = false
     await fetchUsers()
